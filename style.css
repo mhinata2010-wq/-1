@@ -1,0 +1,53 @@
+:root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; background: #11110f; color: #f3f0e9; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 300px; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .35; }
+.app { min-height: 100svh; max-width: 680px; margin: auto; display: flex; flex-direction: column; background: #171715; }
+.topbar { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: 12px 22px; padding-top: max(12px, env(safe-area-inset-top)); }
+.brand { display: flex; gap: 10px; align-items: center; font-size: 12px; font-weight: 750; letter-spacing: .25em; }
+.brand-mark { color: #e9bf74; font-family: Georgia, serif; font-size: 28px; font-weight: 400; letter-spacing: 0; }
+.top-actions { display: flex; align-items: center; gap: 14px; }
+.status { color: #a9a69d; font-size: 11px; letter-spacing: .06em; }
+.icon-button { width: 32px; height: 32px; border: 1px solid #525049; border-radius: 50%; background: transparent; color: #eee9de; font-size: 19px; line-height: 1; }
+.help-button { font-size: 15px; }
+.camera-area { flex: 1; min-height: 280px; display: flex; padding: 0 12px; }
+.viewfinder { position: relative; width: 100%; min-height: 280px; overflow: hidden; background: radial-gradient(circle at 50% 42%, #292a24, #0c0d0b 70%); }
+video, .guide-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+video { object-fit: cover; }
+.guide-canvas { pointer-events: none; }
+.viewfinder-corners { position: absolute; inset: 14px; border: 1px solid #ffffff27; pointer-events: none; }
+.viewfinder-label { position: absolute; top: 27px; left: 27px; display: flex; align-items: center; gap: 7px; color: #eee9de; font-size: 9px; font-weight: 700; letter-spacing: .18em; text-shadow: 0 1px 4px #000; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #e9bf74; box-shadow: 0 0 10px #e9bf74; }
+.camera-message { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; background: #11120fdb; }
+.camera-message.hidden { display: none; }
+.message-symbol { font-family: Georgia, serif; font-size: clamp(60px, 14vw, 90px); color: #e9bf74; line-height: 1; }
+h1 { margin: 20px 0 8px; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(20px, 5vw, 29px); font-weight: 500; }
+.camera-message p { max-width: 290px; margin: 0 0 22px; color: #c2bfb6; font-size: 13px; line-height: 1.6; }
+.primary-button { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 23px; border: 0; border-radius: 4px; background: #e6bc72; color: #201b13; font-size: 14px; font-weight: 700; text-decoration: none; }
+.camera-message .message-note { margin: 14px 0 0; color: #87847d; font-size: 11px; }
+.controls { padding: 22px 24px max(14px, env(safe-area-inset-bottom)); }
+.section-label { color: #a59f91; font-size: 10px; font-weight: 700; letter-spacing: .18em; }
+.guide-options { display: flex; gap: 6px; margin-top: 12px; }
+.guide-option { flex: 1; min-height: 40px; padding: 4px; border: 1px solid #4d4a42; border-radius: 4px; background: #22221f; color: #d1cec5; font-size: 12px; }
+.guide-option.active { border-color: #dfb76e; background: #3a3020; color: #f4cb80; }
+.capture-row { display: flex; align-items: center; justify-content: space-around; margin: 20px auto 11px; max-width: 390px; }
+.secondary-button { width: 64px; border: 0; background: transparent; color: #dfd9cc; display: flex; align-items: center; flex-direction: column; gap: 4px; font-size: 11px; }
+.secondary-button svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.shutter { width: 74px; height: 74px; padding: 5px; border: 2px solid #f0e9da; border-radius: 50%; background: transparent; }
+.shutter span { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f0e9da; }
+.shutter:active span { transform: scale(.88); }
+.footnote { margin: 0; color: #858179; font-size: 10px; line-height: 1.5; text-align: center; }
+dialog { border: 1px solid #615744; border-radius: 10px; background: #20201d; color: #f3f0e9; box-shadow: 0 30px 80px #000b; }
+dialog::backdrop { background: #000b; }
+.dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+.photo-dialog { width: min(94vw, 600px); max-height: 90svh; padding: 16px; }
+.photo-dialog img { display: block; max-width: 100%; max-height: 65svh; margin: auto; object-fit: contain; }
+.dialog-actions { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 16px; }
+.text-button { border: 0; background: none; color: #e6bc72; }
+.help-dialog { width: min(90vw, 400px); padding: 22px; }
+.help-dialog p { color: #d0cbc0; font-size: 14px; line-height: 1.7; }
+.help-dialog .primary-button { width: 100%; margin-top: 8px; }
+@media (min-width: 681px) { body { background: #0a0a09; } .app { min-height: 100vh; box-shadow: 0 0 60px #0008; } }
+@media (max-height: 650px) { .topbar { min-height: 48px; } .controls { padding-top: 12px; } .capture-row { margin: 10px auto 5px; } .shutter { width: 62px; height: 62px; } }

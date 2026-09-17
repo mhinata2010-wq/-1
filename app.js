@@ -20,6 +20,69 @@
   let photoUrl = null;
   let photoFile = null;
 
+  function drawGoldenSquares(ctx, width, height) {
+    // Rotate the reference's 1:phi landscape rectangle into the portrait frame.
+    // Its first (largest) square ends at the lower-right corner.
+    const map = (u, v) => {
+      let x = v * width;
+      let y = height - u * (height / PHI);
+      if (rotation === 1 || rotation === 2) x = width - x;
+      if (rotation === 2 || rotation === 3) y = height - y;
+      return { x, y };
+    };
+    const squares = [];
+    const remaining = { x: 0, y: 0, width: PHI, height: 1 };
+    for (let i = 0; i < 12; i++) {
+      const side = Math.min(remaining.width, remaining.height);
+      if (side * width < 5) break;
+      let x = remaining.x;
+      let y = remaining.y;
+      if (i % 4 === 0) { remaining.x += side; remaining.width -= side; }
+      else if (i % 4 === 1) { remaining.y += side; remaining.height -= side; }
+      else if (i % 4 === 2) { x += remaining.width - side; remaining.width -= side; }
+      else { y += remaining.height - side; remaining.height -= side; }
+      squares.push({ x, y, side, direction: i % 4 });
+    }
+
+    ctx.strokeStyle = '#f5e9d2';
+    ctx.globalAlpha = .7;
+    ctx.lineWidth = Math.max(1, width / 480);
+    ctx.shadowBlur = 3;
+    for (const { x, y, side } of squares) {
+      const corners = [map(x, y), map(x + side, y), map(x + side, y + side), map(x, y + side)];
+      ctx.beginPath();
+      ctx.moveTo(corners[0].x, corners[0].y);
+      for (let j = 1; j < corners.length; j++) ctx.lineTo(corners[j].x, corners[j].y);
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#52b9ff';
+    ctx.globalAlpha = .98;
+    ctx.lineWidth = Math.max(2.3, width / 170);
+    ctx.shadowBlur = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    let started = false;
+    for (const { x, y, side, direction } of squares) {
+      const centers = [
+        { x: x + side, y: y + side },
+        { x, y: y + side },
+        { x, y },
+        { x: x + side, y }
+      ];
+      const center = centers[direction];
+      const startAngle = Math.PI + direction * Math.PI / 2;
+      for (let j = 0; j <= 32; j++) {
+        const angle = startAngle + j * Math.PI / 64;
+        const point = map(center.x + side * Math.cos(angle), center.y + side * Math.sin(angle));
+        if (!started) { ctx.moveTo(point.x, point.y); started = true; }
+        else ctx.lineTo(point.x, point.y);
+      }
+    }
+    ctx.stroke();
+  }
+
   function drawGuide(ctx, width, height) {
     ctx.save();
     ctx.strokeStyle = '#f5ce89';
@@ -38,30 +101,7 @@
         ctx.beginPath(); ctx.arc(width * x, height * y, 3, 0, Math.PI * 2); ctx.fill();
       }));
     } else if (guide === 'spiral') {
-      // The outer end meets a frame corner; each quarter turn inward shrinks by phi.
-      const cx = width * .72;
-      const cy = height / (PHI * PHI);
-      const outerRadius = Math.hypot(width - cx, height - cy);
-      const endAngle = Math.atan2(height - cy, width - cx);
-      const b = 2 * Math.log(PHI) / Math.PI;
-      ctx.globalAlpha = .95;
-      ctx.lineWidth = Math.max(2, Math.min(width, height) / 190);
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      for (let i = 0; i <= 320; i++) {
-        const theta = -4 * Math.PI + i * 4 * Math.PI / 320;
-        const radius = outerRadius * Math.exp(b * theta);
-        const angle = endAngle - theta;
-        let x = cx + Math.cos(angle) * radius;
-        let y = cy + Math.sin(angle) * radius;
-        if (rotation === 1 || rotation === 2) x = width - x;
-        if (rotation === 2 || rotation === 3) y = height - y;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      const focusX = rotation === 1 || rotation === 2 ? width - cx : cx;
-      const focusY = rotation === 2 || rotation === 3 ? height - cy : cy;
-      ctx.beginPath(); ctx.arc(focusX, focusY, 3, 0, Math.PI * 2); ctx.fill();
+      drawGoldenSquares(ctx, width, height);
     }
     ctx.restore();
   }

@@ -15,14 +15,13 @@
   const sharePhoto = document.getElementById('sharePhoto');
   let stream = null;
   let facingMode = 'environment';
-  let guide = 'grid';
+  let guide = 'spiral';
   let rotation = 0;
   let photoUrl = null;
   let photoFile = null;
 
-  function drawGuide(ctx, width, height, pixelRatio = 1) {
+  function drawGuide(ctx, width, height) {
     ctx.save();
-    ctx.scale(pixelRatio, pixelRatio);
     ctx.strokeStyle = '#f5ce89';
     ctx.fillStyle = '#f5ce89';
     ctx.lineWidth = Math.max(1.1, Math.min(width, height) / 450);
@@ -39,23 +38,30 @@
         ctx.beginPath(); ctx.arc(width * x, height * y, 3, 0, Math.PI * 2); ctx.fill();
       }));
     } else if (guide === 'spiral') {
-      // A logarithmic golden spiral: its radius grows by phi each quarter turn.
-      const side = Math.min(width, height);
-      const centerX = width * .382;
-      const centerY = height * .382;
+      // The outer end meets a frame corner; each quarter turn inward shrinks by phi.
+      const cx = width * .72;
+      const cy = height / (PHI * PHI);
+      const outerRadius = Math.hypot(width - cx, height - cy);
+      const endAngle = Math.atan2(height - cy, width - cx);
       const b = 2 * Math.log(PHI) / Math.PI;
-      ctx.globalAlpha = .9;
+      ctx.globalAlpha = .95;
+      ctx.lineWidth = Math.max(2, Math.min(width, height) / 190);
+      ctx.lineCap = 'round';
       ctx.beginPath();
       for (let i = 0; i <= 320; i++) {
-        const theta = -2 * Math.PI + i * 4 * Math.PI / 320;
-        const radius = side * .027 * Math.exp(b * (theta + 2 * Math.PI));
-        const angle = theta + rotation * Math.PI / 2;
-        const x = centerX + Math.cos(angle) * radius;
-        const y = centerY + Math.sin(angle) * radius;
+        const theta = -4 * Math.PI + i * 4 * Math.PI / 320;
+        const radius = outerRadius * Math.exp(b * theta);
+        const angle = endAngle - theta;
+        let x = cx + Math.cos(angle) * radius;
+        let y = cy + Math.sin(angle) * radius;
+        if (rotation === 1 || rotation === 2) x = width - x;
+        if (rotation === 2 || rotation === 3) y = height - y;
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
-      ctx.beginPath(); ctx.arc(centerX, centerY, 4, 0, Math.PI * 2); ctx.fill();
+      const focusX = rotation === 1 || rotation === 2 ? width - cx : cx;
+      const focusY = rotation === 2 || rotation === 3 ? height - cy : cy;
+      ctx.beginPath(); ctx.arc(focusX, focusY, 3, 0, Math.PI * 2); ctx.fill();
     }
     ctx.restore();
   }
@@ -108,7 +114,6 @@
 
   function capture() {
     if (!video.videoWidth || !video.videoHeight) return;
-    const frame = viewfinder.getBoundingClientRect();
     const aspect = 1 / PHI;
     const sourceAspect = video.videoWidth / video.videoHeight;
     let sx = 0, sy = 0, sw = video.videoWidth, sh = video.videoHeight;
@@ -119,7 +124,6 @@
     output.height = Math.round(output.width * PHI);
     const ctx = output.getContext('2d');
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, output.width, output.height);
-    drawGuide(ctx, frame.width, frame.height, output.width / frame.width);
     output.toBlob(blob => {
       if (!blob) return;
       if (photoUrl) URL.revokeObjectURL(photoUrl);

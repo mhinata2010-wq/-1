@@ -32,7 +32,7 @@
           <div id="cameraMessage" class="camera-message">
             <div class="message-symbol">Φ</div>
             <h1>美しい構図を、ひと目で。</h1>
-            <p>黄金比のガイドを重ねて、写真を撮影できます。</p>
+            <p>右下から巻く黄金螺旋を目印に撮影できます。ガイドは写真に残りません。</p>
             <button id="startButton" class="primary-button" type="button">カメラを起動</button>
             <p class="message-note">初回はカメラへのアクセスを許可してください</p>
           </div>
@@ -43,14 +43,14 @@
         <div class="guide-section">
           <span class="section-label">COMPOSITION GUIDE</span>
           <div class="guide-options" role="group" aria-label="ガイドの種類">
-            <button class="guide-option active" data-guide="grid" type="button" aria-pressed="true">黄金比グリッド</button>
-            <button class="guide-option" data-guide="spiral" type="button" aria-pressed="false">黄金螺旋</button>
+            <button class="guide-option" data-guide="grid" type="button" aria-pressed="false">黄金比グリッド</button>
+            <button class="guide-option active" data-guide="spiral" type="button" aria-pressed="true">黄金螺旋</button>
             <button class="guide-option" data-guide="none" type="button" aria-pressed="false">なし</button>
           </div>
         </div>
 
         <div class="capture-row">
-          <button id="rotateButton" class="secondary-button" type="button" aria-label="黄金螺旋を回転" title="黄金螺旋を回転" disabled>
+          <button id="rotateButton" class="secondary-button" type="button" aria-label="黄金螺旋を回転" title="黄金螺旋を回転">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.2-5.5M20 4v5h-5"/></svg>
             <span>回転</span>
           </button>
@@ -60,7 +60,7 @@
             <span>切替</span>
           </button>
         </div>
-        <p class="footnote">撮影した写真は端末に保存できます。画像はサーバーに送信されません。</p>
+        <p class="footnote">ガイド線は写真に入りません。画像はサーバーに送信されません。</p>
       </section>
     </main>
 
@@ -73,7 +73,7 @@
     <dialog id="helpDialog" class="help-dialog">
       <div class="dialog-header"><strong>使い方</strong><button id="closeHelp" class="icon-button" type="button" aria-label="閉じる">×</button></div>
       <p>被写体を黄金比グリッドの交点、または黄金螺旋の中心に合わせて撮影します。</p>
-      <p>ガイドはプレビューと保存する写真の両方に重なります。螺旋の向きは「回転」で変えられます。</p>
+      <p>ガイドは撮影中だけ表示され、保存する写真には入りません。黄金螺旋は右下から内側へ巻きます。「回転」で始まる角を変えられます。</p>
       <p>iPhone では Safari で開き、カメラを許可してください。ホーム画面に追加するとアプリのように起動できます。</p>
       <button id="gotItButton" class="primary-button" type="button">わかりました</button>
     </dialog>

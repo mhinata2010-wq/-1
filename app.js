@@ -13,12 +13,91 @@
   const photoPreview = document.getElementById('photoPreview');
   const downloadPhoto = document.getElementById('downloadPhoto');
   const sharePhoto = document.getElementById('sharePhoto');
+  const zoomRange = document.getElementById('zoomRange');
+  const zoomValue = document.getElementById('zoomValue');
+  const zoomModeLabel = document.getElementById('zoomMode');
   let stream = null;
   let facingMode = 'environment';
   let guide = 'spiral';
   let rotation = 0;
   let photoUrl = null;
   let photoFile = null;
+  let zoomMode = 'digital';
+  let zoomFactor = 1;
+  let zoomTrack = null;
+  let zoomTimer = null;
+  let zoomQueue = Promise.resolve();
+
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const formatZoom = value => `${value.toFixed(1)}×`;
+
+  function useDigitalZoom(value = 1) {
+    zoomMode = 'digital';
+    zoomFactor = clamp(value, 1, 3);
+    zoomRange.min = '1';
+    zoomRange.max = '3';
+    zoomRange.step = '0.1';
+    zoomRange.value = String(zoomFactor);
+    zoomValue.textContent = formatZoom(zoomFactor);
+    zoomModeLabel.textContent = 'デジタル';
+    video.style.transform = `scale(${zoomFactor})`;
+  }
+
+  function configureZoom(track) {
+    zoomTrack = track;
+    zoomQueue = Promise.resolve();
+    let capabilities;
+    let current;
+    try {
+      capabilities = track.getCapabilities?.().zoom;
+      current = track.getSettings?.().zoom;
+    } catch { /* Some browsers do not expose camera zoom. */ }
+    if (Number.isFinite(capabilities?.min) && Number.isFinite(capabilities?.max) &&
+        capabilities.min > 0 && capabilities.max > capabilities.min && Number.isFinite(current)) {
+      zoomMode = 'camera';
+      zoomFactor = clamp(current, capabilities.min, capabilities.max);
+      zoomRange.min = String(capabilities.min);
+      zoomRange.max = String(capabilities.max);
+      zoomRange.step = String(capabilities.step > 0 ? capabilities.step : .1);
+      zoomRange.value = String(zoomFactor);
+      zoomValue.textContent = formatZoom(zoomFactor);
+      zoomModeLabel.textContent = 'カメラ';
+      video.style.transform = 'scale(1)';
+    } else {
+      useDigitalZoom();
+    }
+    zoomRange.disabled = false;
+  }
+
+  async function applyCameraZoom(track, requested) {
+    if (track !== zoomTrack || zoomMode !== 'camera') return;
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: requested }] });
+      if (track !== zoomTrack) return;
+      const actual = track.getSettings?.().zoom;
+      const tolerance = Math.max(.12, Number(zoomRange.step) * .55);
+      if (!Number.isFinite(actual) || Math.abs(actual - requested) > tolerance) throw new Error('Zoom was not applied');
+      zoomFactor = actual;
+      zoomRange.value = String(actual);
+      zoomValue.textContent = formatZoom(actual);
+    } catch {
+      if (track === zoomTrack) useDigitalZoom(requested);
+    }
+  }
+
+  function requestZoom(value) {
+    const requested = clamp(value, Number(zoomRange.min), Number(zoomRange.max));
+    zoomValue.textContent = formatZoom(requested);
+    if (zoomMode === 'digital') {
+      useDigitalZoom(requested);
+      return;
+    }
+    clearTimeout(zoomTimer);
+    const track = zoomTrack;
+    zoomTimer = setTimeout(() => {
+      zoomQueue = zoomQueue.then(() => applyCameraZoom(track, requested));
+    }, 120);
+  }
 
   function drawGoldenSquares(ctx, width, height) {
     // Rotate the reference's 1:phi landscape rectangle into the portrait frame.
@@ -123,6 +202,8 @@
     startButton.textContent = 'もう一度試す';
     captureButton.disabled = true;
     switchButton.disabled = true;
+    zoomRange.disabled = true;
+    zoomModeLabel.textContent = '利用不可';
   }
 
   async function startCamera() {
@@ -132,6 +213,14 @@
     }
     startButton.disabled = true;
     status.textContent = '接続中';
+    clearTimeout(zoomTimer);
+    zoomTrack = null;
+    captureButton.disabled = true;
+    switchButton.disabled = true;
+    zoomRange.disabled = true;
+    zoomModeLabel.textContent = '準備中';
+    zoomValue.textContent = '1.0×';
+    video.style.transform = 'scale(1)';
     if (stream) stream.getTracks().forEach(track => track.stop());
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -144,6 +233,7 @@
       status.textContent = facingMode === 'environment' ? '背面カメラ' : '前面カメラ';
       captureButton.disabled = false;
       switchButton.disabled = false;
+      configureZoom(stream.getVideoTracks()[0]);
       redraw();
     } catch (error) {
       showError(error.name === 'NotAllowedError' ? 'Safari の設定でカメラを許可してから、もう一度お試しください。' : 'ほかのアプリがカメラを使用していないか確認してください。');
@@ -159,8 +249,17 @@
     let sx = 0, sy = 0, sw = video.videoWidth, sh = video.videoHeight;
     if (sourceAspect > aspect) { sw = sh * aspect; sx = (video.videoWidth - sw) / 2; }
     else { sh = sw / aspect; sy = (video.videoHeight - sh) / 2; }
+    const outputWidth = Math.round(sw);
+    if (zoomMode === 'digital') {
+      const cropWidth = sw / zoomFactor;
+      const cropHeight = sh / zoomFactor;
+      sx += (sw - cropWidth) / 2;
+      sy += (sh - cropHeight) / 2;
+      sw = cropWidth;
+      sh = cropHeight;
+    }
     const output = document.createElement('canvas');
-    output.width = Math.round(sw);
+    output.width = outputWidth;
     output.height = Math.round(output.width * PHI);
     const ctx = output.getContext('2d');
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, output.width, output.height);
@@ -179,6 +278,7 @@
 
   startButton.addEventListener('click', startCamera);
   captureButton.addEventListener('click', capture);
+  zoomRange.addEventListener('input', () => requestZoom(Number(zoomRange.value)));
   switchButton.addEventListener('click', () => {
     facingMode = facingMode === 'environment' ? 'user' : 'environment';
     startCamera();

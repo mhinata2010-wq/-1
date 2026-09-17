@@ -45,6 +45,8 @@ dialog::backdrop { background: #000b; }
 .photo-dialog { width: min(94vw, 600px); max-height: 90svh; padding: 16px; }
 .photo-dialog img { display: block; max-width: 100%; max-height: 65svh; margin: auto; object-fit: contain; }
 .dialog-actions { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 16px; }
+.dialog-actions [hidden] { display: none; }
+@media (max-width: 440px) { .dialog-actions { flex-wrap: wrap; } .dialog-actions .primary-button { flex: 1 1 100%; } }
 .text-button { border: 0; background: none; color: #e6bc72; }
 .help-dialog { width: min(90vw, 400px); padding: 22px; }
 .help-dialog p { color: #d0cbc0; font-size: 14px; line-height: 1.7; }

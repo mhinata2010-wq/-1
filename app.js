@@ -12,11 +12,13 @@
   const photoDialog = document.getElementById('photoDialog');
   const photoPreview = document.getElementById('photoPreview');
   const downloadPhoto = document.getElementById('downloadPhoto');
+  const sharePhoto = document.getElementById('sharePhoto');
   let stream = null;
   let facingMode = 'environment';
   let guide = 'grid';
   let rotation = 0;
   let photoUrl = null;
+  let photoFile = null;
 
   function drawGuide(ctx, width, height, pixelRatio = 1) {
     ctx.save();
@@ -125,6 +127,8 @@
       photoPreview.src = photoUrl;
       downloadPhoto.href = photoUrl;
       downloadPhoto.download = `phi-camera-${new Date().toISOString().replace(/[:.]/g, '-')}.jpg`;
+      photoFile = new File([blob], downloadPhoto.download, { type: 'image/jpeg' });
+      sharePhoto.hidden = !navigator.canShare?.({ files: [photoFile] });
       photoDialog.showModal();
     }, 'image/jpeg', .92);
   }
@@ -151,6 +155,11 @@
   document.getElementById('gotItButton').addEventListener('click', () => document.getElementById('helpDialog').close());
   document.getElementById('closePhoto').addEventListener('click', () => photoDialog.close());
   document.getElementById('retakeButton').addEventListener('click', () => photoDialog.close());
+  sharePhoto.addEventListener('click', async () => {
+    if (!photoFile) return;
+    try { await navigator.share({ files: [photoFile], title: 'Φ Camera' }); }
+    catch (error) { if (error.name !== 'AbortError') status.textContent = '共有できませんでした'; }
+  });
   window.addEventListener('resize', redraw);
   window.addEventListener('pagehide', () => { if (stream) stream.getTracks().forEach(track => track.stop()); });
   redraw();

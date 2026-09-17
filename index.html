@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#11110f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="phi_camera" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="description" content="黄金比のガイドを見ながら撮影できるシンプルなカメラ。" />
-    <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest?v=phi-camera-icon-1" />
+    <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="stylesheet" href="style.css?v=one-screen-1" />
-    <title>Φ Camera | 黄金比カメラ</title>
+    <title>phi_camera</title>
   </head>
   <body>
     <main class="app">
       <header class="topbar">
-        <div class="brand"><span class="brand-mark">Φ</span><span>CAMERA</span></div>
+        <div class="brand"><span class="brand-mark">Φ</span><span>phi_camera</span></div>
         <div class="top-actions">
           <span id="status" class="status" role="status">準備中</span>
           <button id="helpButton" class="icon-button help-button" type="button" aria-label="使い方を表示">?</button>
@@ -73,7 +75,7 @@
     <dialog id="photoDialog" class="photo-dialog">
       <div class="dialog-header"><strong>撮影した写真</strong><button id="closePhoto" class="icon-button" type="button" aria-label="閉じる">×</button></div>
       <img id="photoPreview" alt="撮影した写真" />
-      <div class="dialog-actions"><button id="sharePhoto" class="primary-button" type="button" hidden>写真を共有・保存</button><a id="downloadPhoto" class="primary-button" download="phi-camera.jpg">ダウンロード</a><button id="retakeButton" class="text-button" type="button">撮り直す</button></div>
+      <div class="dialog-actions"><button id="sharePhoto" class="primary-button" type="button" hidden>写真を共有・保存</button><a id="downloadPhoto" class="primary-button" download="phi_camera.jpg">ダウンロード</a><button id="retakeButton" class="text-button" type="button">撮り直す</button></div>
     </dialog>
 
     <dialog id="helpDialog" class="help-dialog">
@@ -85,6 +87,6 @@
       <button id="gotItButton" class="primary-button" type="button">わかりました</button>
     </dialog>
 
-    <script src="app.js?v=adaptive-zoom-1" defer></script>
+    <script src="app.js?v=phi-camera-name-1" defer></script>
   </body>
 </html>

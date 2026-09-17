@@ -269,7 +269,7 @@
       photoUrl = URL.createObjectURL(blob);
       photoPreview.src = photoUrl;
       downloadPhoto.href = photoUrl;
-      downloadPhoto.download = `phi-camera-${new Date().toISOString().replace(/[:.]/g, '-')}.jpg`;
+      downloadPhoto.download = `phi_camera-${new Date().toISOString().replace(/[:.]/g, '-')}.jpg`;
       photoFile = new File([blob], downloadPhoto.download, { type: 'image/jpeg' });
       sharePhoto.hidden = !navigator.canShare?.({ files: [photoFile] });
       photoDialog.showModal();
@@ -301,7 +301,7 @@
   document.getElementById('retakeButton').addEventListener('click', () => photoDialog.close());
   sharePhoto.addEventListener('click', async () => {
     if (!photoFile) return;
-    try { await navigator.share({ files: [photoFile], title: 'Φ Camera' }); }
+    try { await navigator.share({ files: [photoFile], title: 'phi_camera' }); }
     catch (error) { if (error.name !== 'AbortError') status.textContent = '共有できませんでした'; }
   });
   window.addEventListener('resize', redraw);

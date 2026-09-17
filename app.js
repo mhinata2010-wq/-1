@@ -90,7 +90,7 @@
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+        video: { facingMode: { ideal: facingMode }, aspectRatio: { ideal: 1 / PHI }, width: { ideal: 1440 }, height: { ideal: 2330 } }
       });
       video.srcObject = stream;
       await video.play();
@@ -109,14 +109,14 @@
   function capture() {
     if (!video.videoWidth || !video.videoHeight) return;
     const frame = viewfinder.getBoundingClientRect();
-    const aspect = frame.width / frame.height;
+    const aspect = 1 / PHI;
     const sourceAspect = video.videoWidth / video.videoHeight;
     let sx = 0, sy = 0, sw = video.videoWidth, sh = video.videoHeight;
     if (sourceAspect > aspect) { sw = sh * aspect; sx = (video.videoWidth - sw) / 2; }
     else { sh = sw / aspect; sy = (video.videoHeight - sh) / 2; }
     const output = document.createElement('canvas');
     output.width = Math.round(sw);
-    output.height = Math.round(sh);
+    output.height = Math.round(output.width * PHI);
     const ctx = output.getContext('2d');
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, output.width, output.height);
     drawGuide(ctx, frame.width, frame.height, output.width / frame.width);

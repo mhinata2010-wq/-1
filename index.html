@@ -57,6 +57,8 @@
           <span id="zoomMode">準備中</span>
         </div>
 
+        <label class="guide-save-toggle"><input id="burnGuide" type="checkbox" /><span>ガイド線を写真に残す</span></label>
+
         <div class="capture-row">
           <button id="rotateButton" class="secondary-button" type="button" aria-label="黄金螺旋を回転" title="黄金螺旋を回転">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.2-5.5M20 4v5h-5"/></svg>
@@ -68,7 +70,7 @@
             <span>切替</span>
           </button>
         </div>
-        <p class="footnote">ガイド線は写真に入りません。画像はサーバーに送信されません。</p>
+        <p class="footnote">ガイド線は通常写真に入りません。保存モードで写真に追加できます。</p>
       </section>
     </main>
 
@@ -83,10 +85,11 @@
       <p>被写体を黄金比グリッドの交点、または黄金螺旋の中心に合わせて撮影します。</p>
       <p>黄金矩形を正方形に分け、それぞれの四分円をつないだガイドです。右下の角から内側へ巻き、「回転」で始まる角を変えられます。ガイドは保存する写真には入りません。</p>
       <p>ズームはスライダーで変更できます。カメラが倍率を公開する場合はその範囲に合わせ、利用できない場合は 1〜3 倍のデジタルズームになります。切替時は倍率が戻ります。</p>
+      <p>「ガイド線を写真に残す」をオンにすると、選択中のガイドが保存写真にも描き込まれます。オフなら写真には入りません。</p>
       <p>iPhone では Safari で開き、カメラを許可してください。ホーム画面に追加するとアプリのように起動できます。</p>
       <button id="gotItButton" class="primary-button" type="button">わかりました</button>
     </dialog>
 
-    <script src="app.js?v=phi-camera-name-1" defer></script>
+    <script src="app.js?v=guide-save-1" defer></script>
   </body>
 </html>

@@ -16,6 +16,7 @@
   const zoomRange = document.getElementById('zoomRange');
   const zoomValue = document.getElementById('zoomValue');
   const zoomModeLabel = document.getElementById('zoomMode');
+  const burnGuide = document.getElementById('burnGuide');
   let stream = null;
   let facingMode = 'environment';
   let guide = 'spiral';
@@ -263,6 +264,9 @@
     output.height = Math.round(output.width * PHI);
     const ctx = output.getContext('2d');
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, output.width, output.height);
+    if (burnGuide.checked && guide !== 'none') {
+      drawGuide(ctx, output.width, output.height);
+    }
     output.toBlob(blob => {
       if (!blob) return;
       if (photoUrl) URL.revokeObjectURL(photoUrl);
